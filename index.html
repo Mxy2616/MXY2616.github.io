@@ -631,7 +631,7 @@
                     <button class="zoom-btn" data-map="map-2024" data-action="zoom-in">+</button>
                     <button class="zoom-btn" data-map="map-2024" data-action="zoom-out">-</button>
                 </div>
-                <div id="map-2024" class="map" style="background-image: url('2024.png');">
+                <div id="map-2024" class="map" style="background-image: url('wcx/2024.png');">
                     <!-- 关键：按钮层 -->
                     <div id="buttons-layer"></div>
                 </div>
@@ -651,7 +651,7 @@
                     <button class="zoom-btn" data-map="map-1966" data-action="zoom-in">+</button>
                     <button class="zoom-btn" data-map="map-1966" data-action="zoom-out">-</button>
                 </div>
-                <div id="map-1966" class="map" style="background-image: url('1966.png');"></div>
+                <div id="map-1966" class="map" style="background-image: url('wcx/1966.png');"></div>
             </div>
             <div class="map-wrapper">
                 <div class="map-title">1938年</div>
@@ -668,7 +668,7 @@
                     <button class="zoom-btn" data-map="map-1938" data-action="zoom-in">+</button>
                     <button class="zoom-btn" data-map="map-1938" data-action="zoom-out">-</button>
                 </div>
-                <div id="map-1938" class="map" style="background-image: url('1938.png');"></div>
+                <div id="map-1938" class="map" style="background-image: url('wcx/1938.png');"></div>
             </div>
             <div class="map-wrapper">
                 <div class="map-title">1861年</div>
@@ -685,7 +685,7 @@
                     <button class="zoom-btn" data-map="map-1861" data-action="zoom-in">+</button>
                     <button class="zoom-btn" data-map="map-1861" data-action="zoom-out">-</button>
                 </div>
-                <div id="map-1861" class="map" style="background-image: url('1861.png');"></div>
+                <div id="map-1861" class="map" style="background-image: url('wcx/1861.png');"></div>
             </div>
         </div>
 
@@ -1627,7 +1627,7 @@
 
             // 载入2024底图的原始尺寸，用于百分比->像素定位
             const img = new Image();
-            img.src = '2024.png';
+            img.src = 'wcx/2024.png';
             img.onload = () => {
                 imgNatural.w = img.naturalWidth;
                 imgNatural.h = img.naturalHeight;
