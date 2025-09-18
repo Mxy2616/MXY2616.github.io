@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片坐标获取工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .right-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .upload-container {
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed #4b6cb7;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+        
+        .upload-container:hover {
+            background-color: #e9ecef;
+            border-color: #182848;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(75, 108, 183, 0.3);
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(75, 108, 183, 0.4);
+        }
+        
+        #file-name {
+            margin-top: 10px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        
+        .image-container {
+            position: relative;
+            margin-top: 20px;
+            overflow: auto;
+            max-height: 60vh;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        #image-display {
+            max-width: 100%;
+            cursor: crosshair;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        
+        .coordinates-info {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .coordinates-info h3 {
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        
+        .coordinates-display {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        
+        .coordinate-box {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            min-width: 100px;
+        }
+        
+        .coordinate-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .history {
+            margin-top: 20px;
+        }
+        
+        .history h3 {
+            margin-bottom: 10px;
+            color: #4b6cb7;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        
+        #coordinates-list {
+            list-style-type: none;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        #coordinates-list li {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        #coordinates-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .copy-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: linear-gradient(90deg, #182848 0%, #4b6cb7 100%);
+        }
+        
+        .instructions {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #4b6cb7;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .coordinates-display {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        /* 标记点的样式 */
+        .marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #ff3366;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
+            pointer-events: none;
+        }
+        
+        .marker-label {
+            position: absolute;
+            background-color: rgba(255, 51, 102, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            transform: translate(-50%, -100%);
+            margin-top: -10px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        .toggle-coordinates {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .toggle-btn {
+            padding: 8px 15px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .toggle-btn.active {
+            background-color: #4b6cb7;
+            color: white;
+            border-color: #4b6cb7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>图片坐标获取工具</h1>
+            <p class="description">上传图片并点击任意位置获取相对于图片尺寸的百分比坐标</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="upload-container">
+                    <h2>上传图片</h2>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                    <button class="upload-btn" onclick="document.getElementById('image-upload').click()">选择图片</button>
+                    <p id="file-name">未选择文件</p>
+                </div>
+                
+                <div class="image-container">
+                    <p id="placeholder">请上传图片</p>
+                    <img id="image-display" style="display: none;">
+                </div>
+                
+                <div class="coordinates-info">
+                    <h3>当前坐标</h3>
+                    <div class="coordinates-display">
+                        <div class="coordinate-box">
+                            <div>X 坐标</div>
+                            <div class="coordinate-value" id="x-coord">0%</div>
+                            <div>百分比</div>
+                        </div>
+                        <div class="coordinate-box">
+                            <div>Y 坐标</div>
+                            <div class="coordinate-value" id="y-coord">0%</div>
+                            <div>百分比</div>
+                        </div>
+                    </div>
+                    <div class="toggle-coordinates">
+                        <button class="toggle-btn active" id="percent-btn">百分比</button>
+                        <button class="toggle-btn" id="pixel-btn">像素</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="history">
+                    <h3>坐标历史</h3>
+                    <ul id="coordinates-list"></ul>
+                    <button class="copy-btn" id="copy-btn">复制所有坐标</button>
+                </div>
+                
+                <div class="instructions">
+                    <h3>使用说明</h3>
+                    <ol>
+                        <li>点击"选择图片"按钮上传您的图片</li>
+                        <li>点击图片上的任意位置获取坐标</li>
+                        <li>坐标会显示在左侧并记录在右侧历史列表中</li>
+                        <li>点击"复制所有坐标"按钮可以复制所有历史坐标</li>
+                        <li>坐标格式为: {x: X百分比, y: Y百分比}</li>
+                        <li>可以使用切换按钮在百分比和像素坐标之间切换</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>图片坐标获取工具 &copy; 2023 | 使用纯HTML/CSS/JavaScript实现</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageUpload = document.getElementById('image-upload');
+            const imageDisplay = document.getElementById('image-display');
+            const placeholder = document.getElementById('placeholder');
+            const fileName = document.getElementById('file-name');
+            const xCoord = document.getElementById('x-coord');
+            const yCoord = document.getElementById('y-coord');
+            const coordinatesList = document.getElementById('coordinates-list');
+            const copyBtn = document.getElementById('copy-btn');
+            const percentBtn = document.getElementById('percent-btn');
+            const pixelBtn = document.getElementById('pixel-btn');
+            
+            let coordinatesHistory = [];
+            let showPercent = true;
+            let naturalWidth = 0;
+            let naturalHeight = 0;
+            
+            // 处理图片上传
+            imageUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileName.textContent = file.name;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imageDisplay.src = e.target.result;
+                        imageDisplay.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        
+                        // 等待图片加载完成获取自然尺寸
+                        imageDisplay.onload = function() {
+                            naturalWidth = this.naturalWidth;
+                            naturalHeight = this.naturalHeight;
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // 处理图片点击事件
+            imageDisplay.addEventListener('click', function(e) {
+                const rect = imageDisplay.getBoundingClientRect();
+                
+                // 计算相对于图片的像素坐标
+                const xPixel = Math.round(e.clientX - rect.left);
+                const yPixel = Math.round(e.clientY - rect.top);
+                
+                // 计算相对于图片尺寸的百分比坐标
+                const xPercent = Math.round((xPixel / rect.width) * 1000) / 10; // 保留一位小数
+                const yPercent = Math.round((yPixel / rect.height) * 1000) / 10; // 保留一位小数
+                
+                // 更新坐标显示
+                updateCoordinateDisplay(xPercent, yPercent, xPixel, yPixel);
+                
+                // 添加到历史记录
+                coordinatesHistory.push({
+                    xPercent, 
+                    yPercent, 
+                    xPixel, 
+                    yPixel,
+                    naturalWidth,
+                    naturalHeight
+                });
+                updateCoordinatesList();
+                
+                // 添加标记点
+                addMarker(xPixel, yPixel, xPercent, yPercent);
+            });
+            
+            // 更新坐标显示
+            function updateCoordinateDisplay(xPercent, yPercent, xPixel, yPixel) {
+                if (showPercent) {
+                    xCoord.textContent = `${xPercent}%`;
+                    yCoord.textContent = `${yPercent}%`;
+                } else {
+                    xCoord.textContent = `${xPixel}px`;
+                    yCoord.textContent = `${yPixel}px`;
+                }
+            }
+            
+            // 切换坐标显示模式
+            percentBtn.addEventListener('click', function() {
+                if (!showPercent) {
+                    showPercent = true;
+                    percentBtn.classList.add('active');
+                    pixelBtn.classList.remove('active');
+                    
+                    // 更新当前坐标显示
+                    if (coordinatesHistory.length > 0) {
+                        const lastCoord = coordinatesHistory[coordinatesHistory.length - 1];
+                        xCoord.textContent = `${lastCoord.xPercent}%`;
+                        yCoord.textContent = `${lastCoord.yPercent}%`;
+                    }
+                    
+                    // 更新历史列表
+                    updateCoordinatesList();
+                }
+            });
+            
+            pixelBtn.addEventListener('click', function() {
+                if (showPercent) {
+                    showPercent = false;
+                    pixelBtn.classList.add('active');
+                    percentBtn.classList.remove('active');
+                    
+                    // 更新当前坐标显示
+                    if (coordinatesHistory.length > 0) {
+                        const lastCoord = coordinatesHistory[coordinatesHistory.length - 1];
+                        xCoord.textContent = `${lastCoord.xPixel}px`;
+                        yCoord.textContent = `${lastCoord.yPixel}px`;
+                    }
+                    
+                    // 更新历史列表
+                    updateCoordinatesList();
+                }
+            });
+            
+            // 添加标记点到图片上
+            function addMarker(x, y, xPercent, yPercent) {
+                const marker = document.createElement('div');
+                marker.className = 'marker';
+                marker.style.left = `${x}px`;
+                marker.style.top = `${y}px`;
+                
+                const label = document.createElement('div');
+                label.className = 'marker-label';
+                label.textContent = `(${xPercent}%, ${yPercent}%)`;
+                label.style.left = `${x}px`;
+                label.style.top = `${y}px`;
+                
+                const container = document.querySelector('.image-container');
+                container.appendChild(marker);
+                container.appendChild(label);
+            }
+            
+            // 更新坐标历史列表
+            function updateCoordinatesList() {
+                coordinatesList.innerHTML = '';
+                coordinatesHistory.forEach((coord, index) => {
+                    const li = document.createElement('li');
+                    
+                    if (showPercent) {
+                        li.innerHTML = `
+                            <span>点 ${index + 1}:</span>
+                            <span>X: ${coord.xPercent}%, Y: ${coord.yPercent}%</span>
+                        `;
+                    } else {
+                        li.innerHTML = `
+                            <span>点 ${index + 1}:</span>
+                            <span>X: ${coord.xPixel}px, Y: ${coord.yPixel}px</span>
+                        `;
+                    }
+                    
+                    coordinatesList.appendChild(li);
+                });
+            }
+            
+            // 复制所有坐标到剪贴板
+            copyBtn.addEventListener('click', function() {
+                let coordsText;
+                
+                if (showPercent) {
+                    coordsText = coordinatesHistory.map(coord => 
+                        `{x: ${coord.xPercent}, y: ${coord.yPercent}}`
+                    ).join(',\n');
+                } else {
+                    coordsText = coordinatesHistory.map(coord => 
+                        `{x: ${coord.xPixel}, y: ${coord.yPixel}}`
+                    ).join(',\n');
+                }
+                
+                const textToCopy = `const points = [\n${coordsText}\n];`;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // 更改按钮文本提示复制成功
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = '已复制到剪贴板!';
+                    
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('无法复制文本: ', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
